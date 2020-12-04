@@ -17,26 +17,36 @@ func parse() {
         rows.append(row)
     }
 }
-
 parse()
 
-// Count all the trees you would encounter for the slope right 3, down 1:
-var x = 0
-var y = 0
-var count = 0
-while (y < rows.count - 1) {
-    x += 3
-    y += 1
+var slopes = [
+    (1, 1),
+    (3, 1), // Just run this for part 1
+    (5, 1),
+    (7, 1),
+    (1, 2)
+]
 
-    // get row
-    let row = rows[rows.index(rows.startIndex, offsetBy: y)]
-    // If tree exists in the 
-    for tree in row {
-        if (tree == (x % 31)) {
-            count += 1
+var product = 1
+for (dx, dy) in slopes {
+    var x = 0
+    var y = 0
+    var count = 0
+    while (y < rows.count - 1) {
+        x += dx
+        y += dy
+
+        // get row
+        let row = rows[rows.index(rows.startIndex, offsetBy: y)]
+        // If tree exists in the space mod length
+        for tree in row {
+            if (tree == (x % 31)) {
+                count += 1
+            }
         }
     }
+    print("slope \(dx),\(dy) == \(count)")
+    product *= count
 }
-
-print(count)
+print(product)
 
