@@ -2,7 +2,6 @@
 
 import Foundation
 
-
 let data = try String(contentsOfFile: "./input", encoding: .utf8)
 let values = data.components(separatedBy: .newlines).map { Int($0)}
 
