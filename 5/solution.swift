@@ -5,6 +5,7 @@ let data = try String(contentsOfFile: "./input", encoding: .utf8)
 let seats = data.components(separatedBy: .newlines)
 
 var highestSeat = 0
+var allSeats = [Int]()
 for seat in seats {
 
     let mid = seat.index(seat.startIndex, offsetBy: 7)
@@ -36,8 +37,20 @@ for seat in seats {
     }
 
     let uniqueID = fMask * 8 + sMask
-    // print(uniqueID)
+    allSeats.append(uniqueID)
     highestSeat = max(uniqueID, highestSeat)
 }
 
 print(highestSeat)
+
+// Part 2
+allSeats.sort()
+var prev = 69 
+for s in allSeats {
+    // print(s)
+    if (prev != s - 1) {
+        print(s - 1)
+        break
+    }
+    prev = s
+}
