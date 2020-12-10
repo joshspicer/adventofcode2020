@@ -32,7 +32,7 @@ let rec compare_worklist (item: int64) (paired: int64 list) =
                 | (x :: xs) -> compare_worklist item xs
                 | _ -> false
 
-let rec find_imposter (worklist: int64 list) queue : int64=
+let rec find_imposter (worklist: int64 list) queue : int64 =
     let paired = create_paired queue
     if worklist.IsEmpty then
         -2 |> int64
@@ -47,4 +47,21 @@ let rec find_imposter (worklist: int64 list) queue : int64=
 
 // let shouldBeTrue = compare_worklist 90 (create_paired [10; 20; 30; 40; 50])
 // let shouldBeFalse = compare_worklist 100 (create_paired [10; 20; 30; 40; 50])
-find_imposter worklist queue
+
+// part 1
+let part1 = find_imposter worklist queue 
+
+// part 2
+
+let sumsTo number list =
+    list |> Seq.sum = number
+
+let isWindow windowSize =
+    input |> Seq.windowed windowSize |> Seq.tryFind (sumsTo part1)
+
+let part2Window =  [2..9999] |> Seq.pick isWindow
+
+let part2 =
+    let min = part2Window |> Seq.min
+    let max = part2Window |> Seq.max
+    min + max
