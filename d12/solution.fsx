@@ -27,7 +27,7 @@ let rec state_machine (instr: Instruction list) (state: Ship) : Ship =
     else
         let action = instr.Head.action
         let amount = instr.Head.amount
-        printfn "%d" (int state.facing)
+        // printfn "%d" (int state.facing)
 
         match action with
             | "N" -> {state with y = (state.y + amount)}
@@ -47,9 +47,67 @@ let rec state_machine (instr: Instruction list) (state: Ship) : Ship =
             |>
                 state_machine instr.Tail
 
-let part1 = state_machine input init_state
-printfn "Facing: %s" (part1.facing.ToString())
+let part1 = 
+    let ss = state_machine input init_state
+    (abs ss.x) + (abs ss.y)
 
-(abs part1.x) + (abs part1.y)
+
+// -- part 2
+
+type Ship_With_Waypoint = { x: int; y: int; waypoint_x: int; waypoint_y: int }
+let init_state_2 = {x = 0; y = 0; waypoint_x = 10; waypoint_y = 1 }
+
+let rec clockwise_rotate degrees (a,b)=
+    if degrees = 0 then
+        (a, b)
+    else 
+        clockwise_rotate (degrees - 90) (b, -a)
+
+let rec counter_clockwise_rotate degrees (a,b)=
+    if degrees = 0 then
+        (a, b)
+    else 
+        counter_clockwise_rotate (degrees - 90) (-b, a)
+
+let rec state_machine_part2 (instr: Instruction list) (ship: Ship_With_Waypoint) : Ship_With_Waypoint =
+    // printfn "pos: %d %d waypoint: %d %d" ship.x ship.y ship.waypoint_x ship.waypoint_y
+    if instr.IsEmpty then
+        ship
+    else
+        let action = instr.Head.action
+        let amount = instr.Head.amount
+        // printfn "instruction: %s %d" action amount 
+
+        match action with
+            | "N" -> { ship with waypoint_y = (ship.waypoint_y + amount)}
+            | "S" -> { ship with waypoint_y = (ship.waypoint_y - amount)}
+            | "E" -> { ship with waypoint_x = (ship.waypoint_x + amount)}
+            | "W" -> { ship with waypoint_x = (ship.waypoint_x - amount)}
+            | "R" -> 
+                let rot = clockwise_rotate amount (ship.waypoint_x, ship.waypoint_y)
+                { ship with waypoint_x = (fst rot); waypoint_y = (snd rot)}
+            | "L" ->
+                let rot = counter_clockwise_rotate amount (ship.waypoint_x, ship.waypoint_y)
+                { ship with waypoint_x = (fst rot); waypoint_y = (snd rot)}                
+            | "F" -> 
+                    let xDelta = (ship.waypoint_x * amount)
+                    let yDelta = (ship.waypoint_y * amount)
+                    { 
+                        ship with x = ship.x + xDelta; 
+                                  y = ship.y + yDelta; 
+                    }
+            | _ -> failwith("ope!")
+            |>
+                state_machine_part2 instr.Tail 
+
+// test part 2
+let t1 = clockwise_rotate 90 (10,4)
+let t2 = counter_clockwise_rotate 270 (10,4)
+let t3 = counter_clockwise_rotate 360 (4,-10)
+let t4 = clockwise_rotate 360 (4,-10)
+
+let part2 = 
+    let ss = state_machine_part2 input init_state_2
+    (abs ss.x) + (abs ss.y)
 
 
