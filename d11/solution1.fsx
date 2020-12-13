@@ -38,7 +38,7 @@ let do_one_step (state: char [,]) : char [,] =
             | 'L' -> if (num_adjacement_occupied state x y) = 0 then '#' else 'L'
             | '#' -> if (num_adjacement_occupied state x y) >= 4 then 'L' else '#'
             | '.' -> '.'
-            |  _  -> 'd' ) state 
+            |  _  -> failwith("oh no!") ) state 
 
 let arr_equal arr1 arr2 : bool =
     let mutable isEqual = true
