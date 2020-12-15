@@ -38,25 +38,6 @@ let parse_instructions =
                         (mask,  previous_instructs @ [(offset, value)]) :: instructions.Tail                      
         ) []
 
-
-// formula: (0 | ONES) & ~(ZEROS)
-// let apply prevMap (input: list<int> * list<int> * list<int * int>) =
-//     input
-//         |> Seq.map(fun (zeros, ones, input) ->
-//             let offset = fst input
-//             let value = snd input
-
-//             let apply_ones_results = Seq.fold (fun output x -> output ||| x ) value zeros
-//             let apply_both_results = Seq.fold (fun output x -> output &&& ~~~(x)) apply_ones_results ones
-//             (offset, apply_both_results)
-//         )
-//             |> Seq.fold (fun (map: Map<int,int>) (off, v) -> map.Add (off, v)) prevMap
-
-// let first (a, _, _) = a
-// let second (_,b_,c) = b
-// let third (_, _, c) = c
-
-
 let apply (prevMap: Map<int,int>) (input: (list<int> * list<int>) * list<int * int>) =
     let zeros = fst (fst input)
     let ones = snd (fst input)
@@ -70,9 +51,6 @@ let apply (prevMap: Map<int,int>) (input: (list<int> * list<int>) * list<int * i
             (offset, apply_both_results)
         )
             |> Seq.fold (fun (map: Map<int,int>) (off, v) -> map.Add (off, v)) prevMap
-
-
-// snd parse_instructions.[0]
 
 parse_instructions
     |> Seq.fold (fun map item -> apply map item) Map.empty 
