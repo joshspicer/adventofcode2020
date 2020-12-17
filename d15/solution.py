@@ -18,25 +18,21 @@ was_new = True
 # Init
 for num in inputs:
     spoken = num
-    lastSpokenOnTurn[spoken] = (turn, None) #(lastTurn, prevLastTurn)
+    lastSpokenOnTurn[spoken] = (turn, None) # (lastTurn, prevLastTurn)
     turn += 1
 
 part1 = 2020
 part2 = 30000000
 
 while turn < part2 + 1:
-    # print("\n\nSPOKEN", spoken, "on", turn, "?", ".......",lastSpokenOnTurn)
 
     (lastTurn, prevLastTurn) = lastSpokenOnTurn[spoken]
 
     if prevLastTurn == None:
         spoken = 0
-        # print ("IF","new [", spoken, "]=", turn, lastTurn)
-
     else:
         # Had been spoken before
         difference = lastTurn - prevLastTurn
-        # print("ELSE", "diff=", lastTurn, "-", prevLastTurn, "=", difference)
         spoken = difference
     
     if spoken not in lastSpokenOnTurn.keys():
