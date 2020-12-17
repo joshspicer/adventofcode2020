@@ -2,7 +2,7 @@ open System
 open System.IO
 open System.Text.RegularExpressions
 
-let fileName = "input"
+let fileName = "example1p2"
 let rawInput = File.ReadAllText($"d14/{fileName}").Split("\n") |> Seq.toList
 
 let rec parse_mask (string_mask: string) idx zeroes_arr ones_arr = 
@@ -15,14 +15,14 @@ let rec parse_mask (string_mask: string) idx zeroes_arr ones_arr =
             | '0' -> parse_mask string_mask (idx - 1)  (int64 (2F ** (float32 (string_mask.Length - idx - 1)) )  :: zeroes_arr)   ones_arr
             | _   -> parse_mask string_mask (idx - 1)  zeroes_arr   ones_arr
 
-let parse_instructions =
+let parse_instructions mask_parser =
     rawInput
             |> Seq.fold(fun instructions token -> 
                     // Try to parse mask
                     
                     if token.Contains("mask") then
                         let mask = token.Split("=").[1].TrimStart()
-                        let parsed_mask = parse_mask mask 35 [] []
+                        let parsed_mask = mask_parser mask 35 [] []
 
                         [(parsed_mask, [])] @ instructions
                         
@@ -50,7 +50,9 @@ let apply prevMap input =
         )
             |> Seq.fold (fun (map: Map<int64,int64>) (off, v) -> map.Add (off, v)) prevMap
 
-parse_instructions
+// part1
+
+(parse_instructions parse_mask)
     |> Seq.rev
     |> Seq.fold (fun map item -> apply map item) Map.empty 
     |> Seq.fold (fun sum resultsMap -> sum + resultsMap.Value) 0L

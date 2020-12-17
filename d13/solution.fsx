@@ -1,6 +1,6 @@
 open System
 open System.IO
-let fileName = "example5"
+let fileName = "input"
 let rawInput = File.ReadAllText($"d13/{fileName}").Split("\n") |> Seq.toList
 let timeOffset = rawInput |> Seq.head |> int
 let buses_part1 =
@@ -64,4 +64,38 @@ let rec part2 baseDivisor currTime (schedule: list<int64 * int64>): int64 =
 
 
 // do the thing.
-part2 maxDivisor maxDivisor relativeBusNumbers
+// part2 maxDivisor maxDivisor relativeBusNumbers
+
+
+// My own attempt above didn't work
+// it is too slow!
+// Need: https://en.wikipedia.org/wiki/Chinese_remainder_theorem
+// https://www.youtube.com/watch?v=zIFehsBHB8o
+// Solving system of Congruences.
+
+// For a given bus number, we have the offset as an index, which can be represented as
+// the remainder MOD busNum.
+let remainder idx busNum = 
+    (busNum - (int64 idx % busNum)) % busNum 
+
+let buses_with_rem =
+    buses_part2 
+        |> Seq.map (fun (idx, busid) -> (remainder idx busid, busid))
+let N = buses_with_rem |> Seq.map snd |> Seq.reduce (*) // sum of all busIDs (divisors)
+
+let remainder_theorem_solve =
+    buses_with_rem
+        |> Seq.map(fun (Bi, divisor) ->
+                let Ni = N / divisor
+                let xi = [1L..divisor] |> Seq.find (fun d -> (Ni * d) % divisor = 1L)
+                let product = Bi * Ni * xi
+
+                product             
+            )
+
+// We now have the results of each individual congruence.
+// By summing them up, we can take a final mod() to determine the
+// number that satisfies all our equations.
+remainder_theorem_solve
+    |> Seq.sum
+        |> (fun sum -> sum % N)
