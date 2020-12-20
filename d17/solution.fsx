@@ -14,7 +14,7 @@ let neighbor_coords ((x,y,z): (int*int*int)) =
         (-1,0); (0,0); (1,0)
         (-1,1); (0,1); (1,1)
     ]
-        |> Seq.collect (fun (xx,yy) -> [ (xx,yy,0); (xx,yy,1);(xx,yy,-1) ])
+        |> Seq.collect (fun (xx,yy) -> [ (xx,yy,0); (xx,yy,1); (xx,yy,-1) ])
         |> Seq.map (fun (xxx,yyy,zzz) -> (x+xxx, y+yyy, z+zzz))
         |> Seq.except [(x,y,z)]
 
@@ -30,3 +30,5 @@ let analyze_slice slice =
             | '.' -> if num_active [3] then '#' else '.'
             | _ -> failwith ("uh oh!") 
     )
+
+    
