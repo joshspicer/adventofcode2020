@@ -22,6 +22,8 @@ and Tree =
     | Node of Node
     | Empty
 
+let defaultTree = { Value = (Number -1); Left = Tree.Empty; Right = Tree.Empty }
+
 let rec lexer (equation: char list) tokens = 
     match equation with
         | [] -> tokens
@@ -35,37 +37,22 @@ let rec lexer (equation: char list) tokens =
                           | _ -> lexer ls tokens // Skip
 let input = rawInput.[0] |> Seq.toList
 
-let rec parser (tokens: Token list) (ast: Tree) =
-    if tokens = [] then
-        ast
-    else   
-        let newAST = 
-            match tokens with
-                | [] -> ast
-                // | (t :: []) -> match t with
-                //                   | 
+let rec parser (tokens: Token list) (currentTree: Tree) (stack: List<Tree>): Tree =
+    match tokens with
+        | [] -> currentTree
+        | (t :: ts) -> 
+            match t with
+                | Number _ ->  parser 
+                                    ts 
+                                    (Tree.Node { Value = t; Left = Tree.Empty; Right = Tree.Empty }) 
+                                    stack
+                
+                | Op _ ->    (Tree.Node { Value = t; Left = (parser ts Tree.Empty stack) ; Right = currentTree })
+                                    
 
-                | (t :: ts) -> match t with
-                                  | Op op -> 
-                                        match ast with
-                                          | Node n -> Tree.Node { Value = t; 
-                                                                  Left = Tree.Empty; 
-                                                                  Right =  Tree.Node n }
-                                          | Empty -> failwith "illegal (1)"
-                                  | Number num ->
-                                         match ast with
-                                          | Node n -> Tree.Node { n with Left = Tree.Node { Value = t; Left = Tree.Empty; Right = Tree.Empty} }
-                                          | Empty -> Tree.Node { Value = t; 
-                                                                 Left = Tree.Empty;
-                                                                 Right = Tree.Empty }
-                                //   | OpenParen ->
-                                //   | CloseParen ->
-                                  | _ -> ast
-        parser tokens.Tail newAST
+let myAST = parser (lexer input []) Tree.Empty []
 
-let myAST = parser (lexer input []) Tree.Empty
-
-
+// --------------------------------------------------
 let rec leftmost tree = 
     match tree with
         |  Node n when n.Left = Tree.Empty -> tree
@@ -76,8 +63,38 @@ let rec rightmost tree =
         |  Node n when n.Right = Tree.Empty -> tree
         |  Node n -> rightmost n.Right 
 
-// leftmost myAST   
-rightmost myAST 
+let getLeft tree = 
+    match tree with 
+        | Node n -> n.Left
+        | Empty _ -> Tree.Empty
 
-// let rec solve (ast: Tree) (result: int) =
-//     let left = leftmost ast
+let getRight tree = 
+    match tree with 
+        | Node n -> n.Right
+        | Empty _ -> Tree.Empty
+
+let getRootValue tree =
+    match tree with
+        | Node n -> n.Value     
+        | Empty -> failwith "ah"
+
+let mapOperator op =
+ match op with 
+                | Add -> (+)
+                | Mult -> (*)
+                | _ -> failwith "noooo"
+let left = leftmost myAST   
+let right = rightmost myAST 
+// --------------------------------------------------
+
+let rec solve (ast: Tree): int =
+    let rootValue = getRootValue ast
+    let leftTree = getLeft ast
+    let rightTree = getRight ast
+
+    match (rootValue, leftTree, rightTree) with 
+        | (Op o, Node lft, Node rgt) -> (mapOperator o) (solve leftTree) (solve rightTree)
+        | (Number n, _, _) -> n 
+
+
+solve myAST
